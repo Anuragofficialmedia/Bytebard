@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koo Clone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            -webkit-tap-highlight-color: transparent; /* Disable highlight on tap */
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+        .scroll-container {
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            overflow-x: hidden;
+        }
+        .header-tab {
+            position: relative;
+            padding-bottom: 8px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .header-tab.active {
+            color: #ffc107; /* Active tab color */
+        }
+        .header-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 3px;
+            background-color: #ffc107;
+            border-radius: 9999px;
+        }
+        .profile-card {
+            min-width: 160px;
+        }
+        .profile-card img {
+            object-fit: cover;
+        }
+        .plus-button {
+            position: fixed;
+            bottom: 80px; /* Adjusted to be above bottom nav */
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: #ffc107;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.2s ease-in-out;
+        }
+        .plus-button:active {
+            transform: scale(0.95);
+        }
+        .bottom-nav {
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+            background-color: white;
+            z-index: 20;
+        }
+        .follow-button {
+            border: 1px solid #ffc107;
+            color: #ffc107;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .follow-button:hover {
+            background-color: #ffc107;
+            color: white;
+        }
+        .people-to-follow-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .people-to-follow-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 500px;
+            padding: 24px;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            position: relative;
+        }
+        .modal-overlay.open .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .modal-close-button {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: gray-500;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+        .modal-close-button:hover {
+            background-color: #eee;
+        }
+        /* Blue tick styling */
+        .blue-tick {
+            color: #1DA1F2; /* A common blue for verified badges */
+            font-size: 0.9em;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-white p-4 flex items-center justify-between shadow-sm sticky top-0 z-50">
+        <div class="flex items-center space-x-2">
+            <img id="profilePicTop" src="https://placehold.co/32x32/f0e68c/ffffff?text=U" alt="ইউজার প্রোফাইল" class="w-8 h-8 rounded-full border border-gray-200 cursor-pointer active:scale-95 transition-transform">
+            <div class="bg-yellow-100 p-2 rounded-full flex items-center justify-center">
+                <!-- Koo Bird Image from Icons8 for better clarity -->
+                <img src="https://img.icons8.com/color/48/000000/chick.png" alt="কু লোগো" class="w-6 h-6">
+            </div>
+        </div>
+        <div class="flex items-center space-x-4">
+            <i class="fas fa-search text-gray-500 text-lg cursor-pointer active:scale-95 transition-transform" id="topSearchIcon"></i>
+            <i class="fas fa-cloud text-gray-500 text-lg cursor-pointer active:scale-95 transition-transform"></i>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow scroll-container">
+        <!-- Header Tabs (Feed, People) -->
+        <nav class="bg-white py-3 flex justify-around border-b border-gray-200 text-gray-600 text-lg font-medium">
+            <div class="header-tab active flex-1 text-center" data-tab="feed">
+                Feed
+            </div>
+            <div class="header-tab flex-1 text-center" data-tab="people">
+                People <span class="w-2 h-2 bg-red-500 rounded-full inline-block ml-1"></span>
+            </div>
+        </nav>
+
+        <!-- Updated! Banner -->
+        <div id="updatedBanner" class="bg-yellow-100 text-yellow-800 text-center py-2 text-sm font-semibold">
+            Updated!
+        </div>
+
+        <!-- What's on your mind... section -->
+        <section class="bg-white p-4 flex items-center space-x-3 border-b border-gray-200">
+            <img src="https://placehold.co/40x40/f0e68c/ffffff?text=U" alt="ইউজার প্রোফাইল" class="w-10 h-10 rounded-full border border-gray-200">
+            <div class="flex-grow relative">
+                <input type="text" id="whatsOnYourMindInput" placeholder="What's on your mind..." class="w-full bg-gray-100 rounded-full py-3 px-5 pr-12 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-200 cursor-pointer" readonly>
+                <button class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-white text-xl pointer-events-none">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- People you can follow section -->
+        <section class="p-4 pt-6 bg-white border-b border-gray-200">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">People you can follow</h2>
+                <button class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full font-medium text-sm hover:bg-yellow-200 transition-colors active:scale-95 transition-transform">
+                    View All
+                </button>
+            </div>
+            <div class="people-to-follow-container flex space-x-4 pb-2">
+                <!-- Profile Card 1: Anurag Goswami with Blue Tick -->
+                <div class="profile-card bg-gray-50 border border-gray-200 rounded-lg shadow-sm p-4 flex flex-col items-center text-center">
+                    <div class="w-20 h-20 rounded-full overflow-hidden mb-3">
+                        <img src="https://placehold.co/80x80/d3d3d3/000000?text=AG" alt="অনুরাগ গোস্বামী" class="w-full h-full">
+                    </div>
+                    <h3 class="font-semibold text-gray-900 text-base mb-1">Anurag Goswami <i class="fas fa-check-circle blue-tick"></i></h3>
+                    <p class="text-gray-600 text-sm mb-3 line-clamp-2">সাংবাদিক, প্রতিষ্ঠাতা, রিপাবলিক টিভি</p>
+                    <button class="follow-button px-5 py-2 rounded-full text-sm font-medium active:bg-yellow-200 transition-transform">
+                        Follow
+                    </button>
+                </div>
+                <!-- Profile Card 2: Narendra Modi with Blue Tick -->
+                <div class="profile-card bg-gray-50 border border-gray-200 rounded-lg shadow-sm p-4 flex flex-col items-center text-center">
+                    <div class="w-20 h-20 rounded-full overflow-hidden mb-3">
+                        <img src="https://placehold.co/80x80/d3d3d3/000000?text=NM" alt="নরেন্দ্র মোদি" class="w-full h-full">
+                    </div>
+                    <h3 class="font-semibold text-gray-900 text-base mb-1">Narendra Modi <i class="fas fa-check-circle blue-tick"></i></h3>
+                    <p class="text-gray-600 text-sm mb-3 line-clamp-2">ভারতের প্রধানমন্ত্রী</p>
+                    <button class="follow-button px-5 py-2 rounded-full text-sm font-medium active:bg-yellow-200 transition-transform">
+                        Follow
+                    </button>
+                </div>
+                <!-- Profile Card 3: Virat Kohli with Blue Tick -->
+                <div class="profile-card bg-gray-50 border border-gray-200 rounded-lg shadow-sm p-4 flex flex-col items-center text-center">
+                    <div class="w-20 h-20 rounded-full overflow-hidden mb-3">
+                        <img src="https://placehold.co/80x80/d3d3d3/000000?text=VK" alt="বিরাট কোহলি" class="w-full h-full">
+                    </div>
+                    <h3 class="font-semibold text-gray-900 text-base mb-1">Virat Kohli <i class="fas fa-check-circle blue-tick"></i></h3>
+                    <p class="text-gray-600 text-sm mb-3 line-clamp-2">ভারতীয় ক্রিকেটার</p>
+                    <button class="follow-button px-5 py-2 rounded-full text-sm font-medium active:bg-yellow-200 transition-transform">
+                        Follow
+                    </button>
+                </div>
+                <!-- Add more profile cards as needed -->
+            </div>
+        </section>
+
+        <!-- Feed Section - Dynamically populated posts will go here -->
+        <section id="feedSection" class="bg-white mt-4">
+            <!-- Existing Koo English Post Example (can be a template for new posts) -->
+            <div class="koo-post p-4 border-b border-gray-200">
+                <div class="flex items-start space-x-3 mb-3">
+                    <div class="relative">
+                        <img src="https://img.icons8.com/color/48/000000/chick.png" alt="কু ইংলিশ" class="w-10 h-10 rounded-full border border-gray-200">
+                        <span class="absolute -bottom-1 -right-1 bg-yellow-400 text-white text-xs px-1 rounded-full">1</span>
+                    </div>
+                    <div class="flex-grow">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-semibold text-gray-900">Koo English <span class="text-gray-500 font-normal">@kooen...</span></h3>
+                            <span class="text-gray-500 text-sm">19 Feb <i class="fas fa-caret-down ml-1"></i></span>
+                        </div>
+                        <p class="text-gray-700 mt-1">Welcome to the Koo family 😊!</p>
+                    </div>
+                </div>
+            </div>
+            <!-- New posts will be added here -->
+        </section>
+
+        <!-- Spacer to ensure content above bottom nav is clickable -->
+        <div class="h-20 sm:h-24"></div>
+
+    </main>
+
+    <!-- Floating Plus Button (triggers Koo posting modal) -->
+    <div class="plus-button" id="openKooModalButton">
+        <i class="fas fa-plus"></i>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav fixed bottom-0 left-0 right-0 flex justify-around items-center h-16 sm:h-20">
+        <div class="flex flex-col items-center text-gray-500 text-xs cursor-pointer active:scale-95 transition-transform">
+            <i class="fas fa-home text-xl mb-1"></i>
+            Home
+        </div>
+        <div class="flex flex-col items-center text-gray-500 text-xs cursor-pointer active:scale-95 transition-transform">
+            <i class="fas fa-hashtag text-xl mb-1"></i>
+            Explore
+        </div>
+        <div class="flex flex-col items-center text-gray-500 text-xs cursor-pointer active:scale-95 transition-transform" id="bottomNavSearch">
+            <i class="fas fa-search text-xl mb-1"></i>
+            Search
+        </div>
+        <div class="flex flex-col items-center text-gray-500 text-xs cursor-pointer active:scale-95 transition-transform">
+            <i class="fas fa-envelope text-xl mb-1"></i>
+            Messages
+        </div>
+        <div class="flex flex-col items-center text-gray-500 text-xs cursor-pointer active:scale-95 transition-transform">
+            <i class="fas fa-user-circle text-xl mb-1"></i>
+            Profile
+        </div>
+    </nav>
+
+    <!-- Koo Post Modal -->
+    <div id="kooModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-button" id="closeKooModalButton"><i class="fas fa-times"></i></button>
+            <h2 class="text-xl font-bold mb-4">আপনার কী মনে হচ্ছে?</h2>
+            <textarea id="kooTextarea" class="w-full p-3 border border-gray-300 rounded-lg mb-4 h-32 focus:outline-none focus:ring-2 focus:ring-yellow-200 resize-none" placeholder="আপনার মাইক্রো-ব্লগ লিখুন..."></textarea>
+            <button id="postKooButton" class="bg-yellow-500 text-white px-6 py-3 rounded-full w-full font-semibold hover:bg-yellow-600 transition-colors active:scale-95 transition-transform">
+                পোস্ট করুন
+            </button>
+        </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div id="searchModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-button" id="closeSearchModalButton"><i class="fas fa-times"></i></button>
+            <h2 class="text-xl font-bold mb-4">অনুসন্ধান করুন</h2>
+            <input type="text" id="searchInput" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-yellow-200" placeholder="কী খুঁজছেন...">
+            <div id="searchResults" class="text-gray-700 text-center">
+                এখানে আপনার সার্চ রেজাল্ট দেখা যাবে।
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Modal -->
+    <div id="accountModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-button" id="closeAccountModalButton"><i class="fas fa-times"></i></button>
+            <h2 class="text-xl font-bold mb-4">অ্যাকাউন্ট ম্যানেজমেন্ট</h2>
+            <p class="text-gray-700 mb-4">এখানে আপনি আপনার অ্যাকাউন্ট তথ্য দেখতে বা সম্পাদনা করতে পারবেন।</p>
+            <button class="bg-blue-500 text-white px-6 py-3 rounded-full w-full font-semibold hover:bg-blue-600 transition-colors active:scale-95 transition-transform">
+                লগইন/সাইনআপ করুন
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Elements ---
+            const headerTabs = document.querySelectorAll('.header-tab');
+            const whatsOnYourMindInput = document.getElementById('whatsOnYourMindInput');
+            const openKooModalButton = document.getElementById('openKooModalButton');
+            const kooModal = document.getElementById('kooModal');
+            const closeKooModalButton = document.getElementById('closeKooModalButton');
+            const kooTextarea = document.getElementById('kooTextarea');
+            const postKooButton = document.getElementById('postKooButton');
+            const feedSection = document.getElementById('feedSection');
+            const updatedBanner = document.getElementById('updatedBanner');
+
+            const topSearchIcon = document.getElementById('topSearchIcon');
+            const bottomNavSearch = document.getElementById('bottomNavSearch');
+            const searchModal = document.getElementById('searchModal');
+            const closeSearchModalButton = document.getElementById('closeSearchModalButton');
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = document.getElementById('searchResults');
+
+            const profilePicTop = document.getElementById('profilePicTop');
+            const accountModal = document.getElementById('accountModal');
+            const closeAccountModalButton = document.getElementById('closeAccountModalButton');
+
+            // --- Utility Functions ---
+            const openModal = (modalElement) => {
+                modalElement.classList.add('open');
+            };
+
+            const closeModal = (modalElement) => {
+                modalElement.classList.remove('open');
+            };
+
+            // --- Event Listeners ---
+
+            // Header Tabs
+            headerTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    headerTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    // In a real app, you would switch content here
+                });
+            });
+
+            // Open Koo Post Modal
+            whatsOnYourMindInput.addEventListener('click', () => openModal(kooModal));
+            openKooModalButton.addEventListener('click', () => openModal(kooModal));
+
+            // Close Koo Post Modal
+            closeKooModalButton.addEventListener('click', () => closeModal(kooModal));
+            kooModal.addEventListener('click', (e) => {
+                if (e.target === kooModal) { // Close if clicked on overlay
+                    closeModal(kooModal);
+                }
+            });
+
+            // Post Koo Functionality
+            postKooButton.addEventListener('click', () => {
+                const kooContent = kooTextarea.value.trim();
+                if (kooContent) {
+                    const now = new Date();
+                    const options = { day: 'numeric', month: 'short' };
+                    const dateString = now.toLocaleDateString('en-GB', options); // e.g., "14 Jun"
+
+                    const newKooHtml = `
+                        <div class="koo-post p-4 border-b border-gray-200">
+                            <div class="flex items-start space-x-3 mb-3">
+                                <div class="relative">
+                                    <img src="https://placehold.co/40x40/f0e68c/ffffff?text=U" alt="ইউজার প্রোফাইল" class="w-10 h-10 rounded-full border border-gray-200">
+                                </div>
+                                <div class="flex-grow">
+                                    <div class="flex items-center justify-between">
+                                        <h3 class="font-semibold text-gray-900">Your Name <span class="text-gray-500 font-normal">@you...</span></h3>
+                                        <span class="text-gray-500 text-sm">${dateString} <i class="fas fa-caret-down ml-1"></i></span>
+                                    </div>
+                                    <p class="text-gray-700 mt-1">${kooContent}</p>
+                                </div>
+                            </div>
+ 
