@@ -4,221 +4,251 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bytebird</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f5f5f5;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html { height: 100%; font-family: Arial, sans-serif; background: #f5f5f5; }
+    /* Header */
+    header {
+      position: fixed; top: 0; left: 0; right: 0;
+      background: #fff;
+      padding: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 100;
+    }
+    .header-content {
+      width: 100%; max-width: 480px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .logo-container {
+      flex: 1; text-align: center;
+    }
+    .logo-container svg {
+      width: 50px; height: 50px;
+      fill: #FFD700; /* yellow */
+    }
+    .company-name {
+      position: absolute;
+      left: 50%; top: 10px;
+      transform: translateX(-50%);
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+    .user-pic-header {
+      width: 40px; height: 40px; border-radius: 50%; object-fit: cover;
+      cursor: pointer;
+    }
+    .settings-icon {
+      font-size: 24px; cursor: pointer;
+    }
+    /* Landing / Welcome */
+    #landing {
+      margin-top: 90px;
       text-align: center;
     }
-    header {
-      background: #fff;
-      padding: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    #landing .logo-home svg {
+      width: 80px; height: 80px;
+      fill: #FFD700;
+      margin-bottom: 10px;
     }
-    .logo svg {
-      width: 60px;
-      height: 60px;
+    #landing .welcome-text {
+      font-size: 28px; font-weight: bold; margin-bottom: 20px;
     }
-    .logo-text { font-size: 24px; margin-top: 10px; }
-    .subtitle { font-size: 14px; color: #666; margin-top: 5px; }
-    .welcome { font-size: 18px; margin: 20px 0; }
     .oval-container {
-      display: inline-block;
+      display: block;
       background: #fff;
       border-radius: 50px;
-      padding: 20px;
+      padding: 15px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
+      width: 80%; max-width: 300px;
+      margin: 0 auto 20px;
     }
     .btn {
-      display: inline-block;
-      padding: 10px 30px;
-      margin: 10px;
+      display: block;
+      width: 100%;
+      padding: 12px 0;
+      margin: 10px 0;
       border-radius: 25px;
       color: white;
-      cursor: pointer;
       text-decoration: none;
+      cursor: pointer;
+      font-size: 16px;
     }
     .btn-join { background: #007bff; }
     .btn-signup { background: #28a745; }
-    .note { font-size: 12px; color: #999; margin-top: 10px; }
-    /* Modal styling */
+    .note { font-size: 12px; color: #999; margin-top: 5px; }
+    /* Modal */
     .modal {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      position: fixed; top:0; left:0; right:0; bottom:0;
       background: rgba(0,0,0,0.5);
-      display: none;
-      justify-content: center;
-      align-items: center;
+      display: none; justify-content: center; align-items: center;
     }
     .modal-content {
-      background: #fff;
-      border-radius: 8px;
-      padding: 20px;
-      width: 90%; max-width: 400px;
-      text-align: left;
+      background: #fff; border-radius: 8px; padding:20px;
+      width: 90%; max-width: 360px;
     }
-    .modal-content h2 { margin-top: 0; }
-    .modal-content label { display: block; margin: 10px 0 5px; }
+    .modal-content label { display:block; margin:10px 0 5px; font-size:14px; }
     .modal-content input, .modal-content select {
-      width: 100%; padding: 8px;
-      box-sizing: border-box;
-      margin-bottom: 10px;
+      width:100%; padding:8px; margin-bottom:10px;
+      border:1px solid #ccc; border-radius:4px; outline:none;
     }
     .modal-content button {
-      padding: 10px;
-      width: 100%;
-      margin-top: 10px;
-      border: none;
-      border-radius: 4px;
-      background: #007bff;
-      color: white;
-      cursor: pointer;
+      width:100%; padding:10px; border:none; border-radius:4px;
+      background:#007bff; color:white; font-size:16px; cursor:pointer;
     }
-    /* App interior */
-    .app-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #007bff;
-      color: white;
-      padding: 10px 20px;
+    /* App Interior */
+    #app { display:none; padding-top:70px; padding-bottom:60px; }
+    .app-main { max-width:480px; margin:0 auto; }
+    .header-main {
+      position: fixed; top:0; left:50%; transform:translateX(-50%);
+      width:100%; max-width:480px;
+      display:flex; justify-content:space-between; align-items:center;
+      padding:10px; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,0.1);
+      z-index:100;
     }
-    .app-header .left img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
+    .header-main .center-logo svg {
+      width:50px; height:50px; fill:#FFD700;
     }
-    .app-header .right input {
-      padding: 6px;
-      border-radius: 4px;
-      border: none;
+    .header-main .options {
+      flex:1; display:flex; justify-content:center; gap:20px;
     }
-    .app-main { padding: 20px; }
-    .app-main .logo-center svg { width: 80px; height: 80px; }
-    .options { display: flex; justify-content: center; gap: 20px; margin-top: 20px; }
-    .option-box {
-      background: #fff;
-      width: 100px;
-      height: 100px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      cursor: pointer;
+    .options .opt {
+      cursor:pointer; font-size:16px; color:#333;
     }
-    .feed { position: fixed; bottom: 20px; right: 20px; }
-    .feed .plus-btn {
-      font-size: 32px;
-      background: #28a745;
-      color: white;
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
+    .feed-view, .people-view { display:none; }
+    .feed-view .posts, .people-view .list { padding:20px; }
+    .plus-btn {
+      position: fixed; bottom:80px; right:20px;
+      width:56px; height:56px; border-radius:50%;
+      background:#28a745; color:#fff; font-size:32px;
+      display:flex; justify-content:center; align-items:center;
+      cursor:pointer; z-index:100;
     }
-    .privacy { font-size: 10px; color: #999; margin: 20px; }
+    /* Bottom nav */
+    .bottom-nav {
+      position:fixed; bottom:0; left:0; right:0;
+      background:#fff; display:flex; justify-content:space-around;
+      align-items:center; height:60px; box-shadow:0 -2px 4px rgba(0,0,0,0.1);
+      z-index:100;
+    }
+    .bottom-nav .nav-item { font-size:20px; cursor:pointer; }
+    /* Settings dropdown */
+    .settings-menu {
+      position:absolute; top:60px; right:15px;
+      background:#fff; border:1px solid #ccc; border-radius:4px;
+      display:none; width:160px; box-shadow:0 2px 6px rgba(0,0,0,0.1);
+    }
+    .settings-menu div {
+      padding:10px; font-size:14px; cursor:pointer;
+      border-bottom:1px solid #eee;
+    }
+    .settings-menu div:last-child { border-bottom:none; }
   </style>
 </head>
 <body>
+  <!-- Header -->
   <header>
-    <div class="logo">
-      <!-- SVG Bird Icon -->
-      <svg viewBox="0 0 64 64"><path d="M32 2 L58 46 L6 46 Z" fill="#007bff"/></svg>
+    <div class="header-content">
+      <img id="profilePicHeader" class="user-pic-header" src="https://via.placeholder.com/40" alt="Profile">
+      <div class="company-name">Bytebird Creative</div>
+      <div id="settingsIcon" class="settings-icon">⚙️</div>
     </div>
-    <div class="logo-text">Bytebird Creative</div>
-    <div class="subtitle">welcome</div>
-  </header>  <div class="oval-container" id="landing">
-    <a class="btn btn-join" onclick="openModal()">Join Now</a>
-    <a class="btn btn-signup" onclick="openModal()">Sign Up</a>
-    <div class="note">By continuing, you agree to our Community Guidelines and Privacy Policy</div>
-  </div>  <!-- Modal for registration -->  <div class="modal" id="regModal">
+    <div id="settingsMenu" class="settings-menu">
+      <div id="optPrivacy">Privacy Policy</div>
+      <div id="optEdit">Edit Profile</div>
+      <div id="optDelete">Delete Account</div>
+    </div>
+  </header>  <!-- Landing -->  <div id="landing">
+    <div class="logo-home">
+      <svg viewBox="0 0 64 64"><path d="M32 2 L58 46 L6 46 Z"/></svg>
+    </div>
+    <div class="welcome-text">Welcome to Bytebird</div>
+    <div class="oval-container">
+      <a class="btn btn-join" onclick="openModal()">Join Now</a>
+      <a class="btn btn-signup" onclick="openModal()">Sign Up</a>
+      <div class="note">By continuing, you agree to our Community Guidelines and Privacy Policy</div>
+    </div>
+  </div>  <!-- Modal -->  <div id="regModal" class="modal">
     <div class="modal-content">
       <h2>Sign Up</h2>
       <label for="name">Full Name</label>
-      <input type="text" id="name" required /><label>Date of Birth</label>
-  <div style="display: flex; gap: 5px;">
-    <select id="dob-day"></select>
-    <select id="dob-month"></select>
-    <select id="dob-year"></select>
+      <input type="text" id="name" required />
+      <label>Date of Birth</label>
+      <div style="display:flex; gap:5px;">
+        <select id="dob-day"></select>
+        <select id="dob-month"></select>
+        <select id="dob-year"></select>
+      </div>
+      <label for="profile-pic">Profile Picture</label>
+      <input type="file" id="profile-pic" accept="image/*" />
+      <label for="username">Username</label>
+      <input type="text" id="username" maxlength="16" required />
+      <label for="password">Password</label>
+      <input type="password" id="password" maxlength="12" required />
+      <label for="recovery">Recovery Code (4 digits)</label>
+      <input type="text" id="recovery" maxlength="4" required />
+      <button onclick="completeSignup()">Sign Up</button>
+    </div>
+  </div>  <!-- App -->  <div id="app"><!-- Main Header inside App -->
+<div class="header-main">
+  <div id="feedOpt" class="options"><span class="opt">Feed</span></div>
+  <div class="center-logo">
+    <svg viewBox="0 0 64 64"><path d="M32 2 L58 46 L6 46 Z"/></svg>
   </div>
-
-  <label for="profile-pic">Profile Picture</label>
-  <input type="file" id="profile-pic" accept="image/*" />
-
-  <label for="username">Username</label>
-  <input type="text" id="username" maxlength="16" required />
-
-  <label for="password">Password</label>
-  <input type="password" id="password" maxlength="12" required />
-
-  <label for="recovery">Recovery Code (4 digits)</label>
-  <input type="text" id="recovery" maxlength="4" required />
-
-  <button onclick="completeSignup()">Sign Up</button>
+  <div id="peopleOpt" class="options"><span class="opt">People</span></div>
 </div>
 
-  </div>  <!-- App container -->  <div id="app" style="display:none;">
-    <div class="app-header">
-      <div class="left"><img id="user-pic" src="#" alt="Profile"></div>
-      <div class="right"><input type="text" placeholder="Search..."></div>
-    </div>
-    <div class="app-main">
-      <div class="logo-center">
-        <svg viewBox="0 0 64 64"><path d="M32 2 L58 46 L6 46 Z" fill="#007bff"/></svg>
-      </div>
-      <div class="welcome" id="welcome-user">Welcome, User</div>
-      <div class="options">
-        <div class="option-box" onclick="showFeed()">
-          <div>Feed</div>
-        </div>
-        <div class="option-box" onclick="showPeople()">
-          <div>People</div>
-        </div>
-      </div>
-      <div class="feed" id="feed">
-        <div class="plus-btn" onclick="newPost()">+</div>
-      </div>
-    </div>
-    <div class="privacy">
-      Your data is uploaded to our Microsoft servers. Do not post illegal or harmful content; you are responsible for your posts.
-    </div>
-  </div>  <script>
-    function openModal() { document.getElementById('regModal').style.display = 'flex'; }
-    function completeSignup() {
-      // stub: validate and store data
-      document.getElementById('landing').style.display = 'none';
-      document.getElementById('regModal').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
-      // set welcome name and picture
-      const name = document.getElementById('name').value;
-      document.getElementById('welcome-user').innerText = 'Welcome, ' + name;
-      const file = document.getElementById('profile-pic').files[0];
-      if (file) {
-        document.getElementById('user-pic').src = URL.createObjectURL(file);
-      }
-    }
-    function showFeed() { alert('Feed view'); }
-    function showPeople() { alert('People view'); }
-    function newPost() { alert('Create new post'); }
+<!-- Views -->
+<div class="app-main">
+  <div id="feedView" class="feed-view posts"></div>
+  <div id="peopleView" class="people-view list"></div>
+</div>
 
-    // Populate DOB selects
-    window.onload = function() {
-      const day = document.getElementById('dob-day');
-      const month = document.getElementById('dob-month');
-      const year = document.getElementById('dob-year');
-      for (let d=1;d<=31;d++) day.options.add(new Option(d,d));
-      ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].forEach((m,i) => month.options.add(new Option(m,i+1)));
-      const currentYear = new Date().getFullYear();
-      for (let y=currentYear-16; y>=1900; y--) year.options.add(new Option(y,y));
+<!-- Floating plus -->
+<div id="postBtn" class="plus-btn">+</div>
+
+<!-- Bottom Nav -->
+<div class="bottom-nav">
+  <div id="navHome" class="nav-item">🏠</div>
+  <div id="navNotify" class="nav-item">🔔</div>
+  <div id="navHelp" class="nav-item">❤️</div>
+</div>
+
+  </div>  <script>
+    // Populate DOB
+    window.onload = () => {
+      const d = document.getElementById('dob-day');
+      const m = document.getElementById('dob-month');
+      const y = document.getElementById('dob-year');
+      for(let i=1;i<=31;i++) d.add(new Option(i,i));
+      ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].forEach((mo,i)=> m.add(new Option(mo,i+1)));
+      const cy = new Date().getFullYear();
+      for(let i=cy-16;i>=1900;i--) y.add(new Option(i,i));
+    };
+    // Modal
+    function openModal(){ document.getElementById('regModal').style.display='flex'; }
+    function completeSignup(){
+      document.getElementById('landing').style.display='none';
+      document.getElementById('regModal').style.display='none';
+      document.getElementById('app').style.display='block';
     }
+    // Settings
+    document.getElementById('settingsIcon').onclick = () => {
+      const menu = document.getElementById('settingsMenu');
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    };
+    // Navigation
+    const feedView = document.getElementById('feedView');
+    const peopleView = document.getElementById('peopleView');
+    document.getElementById('feedOpt').onclick = ()=>{ feedView.style.display='block'; peopleView.style.display='none'; };
+    document.getElementById('peopleOpt').onclick = ()=>{ peopleView.style.display='block'; feedView.style.display='none'; };
+    // Bottom nav (Help: verify)
+    document.getElementById('navHelp').onclick = ()=>{
+      const code = prompt('Enter secret code to get verified:');
+      if(code === 'Jay Radhe Krishna 108'){
+        alert('Verified! Blue tick enabled.');
+      } else alert('Invalid code.');
+    };
+    document.getElementById('postBtn').onclick = ()=>{ alert('Create your micro post!'); };
   </script></body>
 </html>
