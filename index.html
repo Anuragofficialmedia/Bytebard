@@ -1,254 +1,455 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bytebird</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body, html { height: 100%; font-family: Arial, sans-serif; background: #f5f5f5; }
-    /* Header */
-    header {
-      position: fixed; top: 0; left: 0; right: 0;
-      background: #fff;
-      padding: 15px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      display: flex; justify-content: center; align-items: center;
-      z-index: 100;
-    }
-    .header-content {
-      width: 100%; max-width: 480px;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .logo-container {
-      flex: 1; text-align: center;
-    }
-    .logo-container svg {
-      width: 50px; height: 50px;
-      fill: #FFD700; /* yellow */
-    }
-    .company-name {
-      position: absolute;
-      left: 50%; top: 10px;
-      transform: translateX(-50%);
-      font-size: 24px;
-      font-weight: bold;
-      color: #333;
-    }
-    .user-pic-header {
-      width: 40px; height: 40px; border-radius: 50%; object-fit: cover;
-      cursor: pointer;
-    }
-    .settings-icon {
-      font-size: 24px; cursor: pointer;
-    }
-    /* Landing / Welcome */
-    #landing {
-      margin-top: 90px;
-      text-align: center;
-    }
-    #landing .logo-home svg {
-      width: 80px; height: 80px;
-      fill: #FFD700;
-      margin-bottom: 10px;
-    }
-    #landing .welcome-text {
-      font-size: 28px; font-weight: bold; margin-bottom: 20px;
-    }
-    .oval-container {
-      display: block;
-      background: #fff;
-      border-radius: 50px;
-      padding: 15px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      width: 80%; max-width: 300px;
-      margin: 0 auto 20px;
-    }
-    .btn {
-      display: block;
-      width: 100%;
-      padding: 12px 0;
-      margin: 10px 0;
-      border-radius: 25px;
-      color: white;
-      text-decoration: none;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .btn-join { background: #007bff; }
-    .btn-signup { background: #28a745; }
-    .note { font-size: 12px; color: #999; margin-top: 5px; }
-    /* Modal */
-    .modal {
-      position: fixed; top:0; left:0; right:0; bottom:0;
-      background: rgba(0,0,0,0.5);
-      display: none; justify-content: center; align-items: center;
-    }
-    .modal-content {
-      background: #fff; border-radius: 8px; padding:20px;
-      width: 90%; max-width: 360px;
-    }
-    .modal-content label { display:block; margin:10px 0 5px; font-size:14px; }
-    .modal-content input, .modal-content select {
-      width:100%; padding:8px; margin-bottom:10px;
-      border:1px solid #ccc; border-radius:4px; outline:none;
-    }
-    .modal-content button {
-      width:100%; padding:10px; border:none; border-radius:4px;
-      background:#007bff; color:white; font-size:16px; cursor:pointer;
-    }
-    /* App Interior */
-    #app { display:none; padding-top:70px; padding-bottom:60px; }
-    .app-main { max-width:480px; margin:0 auto; }
-    .header-main {
-      position: fixed; top:0; left:50%; transform:translateX(-50%);
-      width:100%; max-width:480px;
-      display:flex; justify-content:space-between; align-items:center;
-      padding:10px; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,0.1);
-      z-index:100;
-    }
-    .header-main .center-logo svg {
-      width:50px; height:50px; fill:#FFD700;
-    }
-    .header-main .options {
-      flex:1; display:flex; justify-content:center; gap:20px;
-    }
-    .options .opt {
-      cursor:pointer; font-size:16px; color:#333;
-    }
-    .feed-view, .people-view { display:none; }
-    .feed-view .posts, .people-view .list { padding:20px; }
-    .plus-btn {
-      position: fixed; bottom:80px; right:20px;
-      width:56px; height:56px; border-radius:50%;
-      background:#28a745; color:#fff; font-size:32px;
-      display:flex; justify-content:center; align-items:center;
-      cursor:pointer; z-index:100;
-    }
-    /* Bottom nav */
-    .bottom-nav {
-      position:fixed; bottom:0; left:0; right:0;
-      background:#fff; display:flex; justify-content:space-around;
-      align-items:center; height:60px; box-shadow:0 -2px 4px rgba(0,0,0,0.1);
-      z-index:100;
-    }
-    .bottom-nav .nav-item { font-size:20px; cursor:pointer; }
-    /* Settings dropdown */
-    .settings-menu {
-      position:absolute; top:60px; right:15px;
-      background:#fff; border:1px solid #ccc; border-radius:4px;
-      display:none; width:160px; box-shadow:0 2px 6px rgba(0,0,0,0.1);
-    }
-    .settings-menu div {
-      padding:10px; font-size:14px; cursor:pointer;
-      border-bottom:1px solid #eee;
-    }
-    .settings-menu div:last-child { border-bottom:none; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bytebird</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e0f2f7; /* Light blue background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 80vh;
+            position: relative;
+        }
+        .header {
+            background-color: #ffffff;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .logo-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 0;
+        }
+        .logo {
+            background-color: black;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        .nav-tabs {
+            display: flex;
+            justify-content: space-around;
+            border-bottom: 1px solid #f0f0f0;
+            background-color: #ffffff;
+            position: sticky;
+            top: 60px; /* Adjust based on header height */
+            z-index: 9;
+        }
+        .nav-tabs button {
+            padding: 12px 0;
+            flex-grow: 1;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-tabs button.active {
+            color: #0d9488; /* Teal color for active tab */
+            border-bottom-color: #0d9488;
+        }
+        .content-section {
+            flex-grow: 1;
+            padding: 16px;
+            overflow-y: auto;
+        }
+        .post-card, .person-card {
+            background-color: #f7faff; /* Lighter background for cards */
+            border-radius: 15px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        .footer-nav {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid #f0f0f0;
+            background-color: #ffffff;
+            position: sticky;
+            bottom: 0;
+            z-index: 10;
+        }
+        .footer-nav button {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .footer-nav button:hover {
+            background-color: #e0f2f7;
+            color: #0d9488;
+        }
+        .profile-picture {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 12px;
+            border: 2px solid #0d9488; /* Teal border for profile pics */
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #ffffff;
+            margin: auto;
+            padding: 24px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        input[type="text"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        input[type="file"] {
+            margin-bottom: 16px;
+        }
+        button {
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn-primary {
+            background-color: #0d9488; /* Teal */
+            color: white;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #057a6e;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background-color: #e0f2f7; /* Light blue */
+            color: #0d9488;
+            border: 1px solid #0d9488;
+        }
+        .btn-secondary:hover {
+            background-color: #c7e8f0;
+            transform: translateY(-2px);
+        }
+        .alert-message {
+            background-color: #d1fae5;
+            color: #065f46;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none; /* Hidden by default */
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #0d9488;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: none; /* Hidden by default */
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-  <!-- Header -->
-  <header>
-    <div class="header-content">
-      <img id="profilePicHeader" class="user-pic-header" src="https://via.placeholder.com/40" alt="Profile">
-      <div class="company-name">Bytebird Creative</div>
-      <div id="settingsIcon" class="settings-icon">⚙️</div>
-    </div>
-    <div id="settingsMenu" class="settings-menu">
-      <div id="optPrivacy">Privacy Policy</div>
-      <div id="optEdit">Edit Profile</div>
-      <div id="optDelete">Delete Account</div>
-    </div>
-  </header>  <!-- Landing -->  <div id="landing">
-    <div class="logo-home">
-      <svg viewBox="0 0 64 64"><path d="M32 2 L58 46 L6 46 Z"/></svg>
-    </div>
-    <div class="welcome-text">Welcome to Bytebird</div>
-    <div class="oval-container">
-      <a class="btn btn-join" onclick="openModal()">Join Now</a>
-      <a class="btn btn-signup" onclick="openModal()">Sign Up</a>
-      <div class="note">By continuing, you agree to our Community Guidelines and Privacy Policy</div>
-    </div>
-  </div>  <!-- Modal -->  <div id="regModal" class="modal">
-    <div class="modal-content">
-      <h2>Sign Up</h2>
-      <label for="name">Full Name</label>
-      <input type="text" id="name" required />
-      <label>Date of Birth</label>
-      <div style="display:flex; gap:5px;">
-        <select id="dob-day"></select>
-        <select id="dob-month"></select>
-        <select id="dob-year"></select>
-      </div>
-      <label for="profile-pic">Profile Picture</label>
-      <input type="file" id="profile-pic" accept="image/*" />
-      <label for="username">Username</label>
-      <input type="text" id="username" maxlength="16" required />
-      <label for="password">Password</label>
-      <input type="password" id="password" maxlength="12" required />
-      <label for="recovery">Recovery Code (4 digits)</label>
-      <input type="text" id="recovery" maxlength="4" required />
-      <button onclick="completeSignup()">Sign Up</button>
-    </div>
-  </div>  <!-- App -->  <div id="app"><!-- Main Header inside App -->
-<div class="header-main">
-  <div id="feedOpt" class="options"><span class="opt">Feed</span></div>
-  <div class="center-logo">
-    <svg viewBox="0 0 64 64"><path d="M32 2 L58 46 L6 46 Z"/></svg>
-  </div>
-  <div id="peopleOpt" class="options"><span class="opt">People</span></div>
-</div>
+    <div class="container" id="appContainer">
+        <!-- Login/Signup Page -->
+        <div id="authPage" class="content-section flex flex-col justify-center items-center h-full text-center">
+            <div class="logo-section">
+                <span class="logo">b</span>
+                <h1 class="text-3xl font-bold text-gray-800">Bytebird</h1>
+                <p class="text-gray-600 mt-1">by BrajYugal Creatives</p>
+                <p class="text-gray-500 mt-4 text-xl">Voice of India</p>
+            </div>
+            <button id="joinNowButton" class="btn-primary w-full max-w-xs mt-6">এখনই যোগদান করুন</button>
+            <button id="loginButton" class="btn-secondary w-full max-w-xs mt-4">লগইন করুন</button>
+            <button id="guestModeButton" class="btn-secondary w-full max-w-xs mt-4">গেস্ট মোডে প্রবেশ করুন</button>
+            <p class="text-gray-500 text-sm mt-8">কমিউনিটি নির্দেশিকা: বাক স্বাধীনতা। কোনো সহিংসতা নেই।</p>
+        </div>
 
-<!-- Views -->
-<div class="app-main">
-  <div id="feedView" class="feed-view posts"></div>
-  <div id="peopleView" class="people-view list"></div>
-</div>
+        <!-- Main App Page (Hidden by default) -->
+        <div id="mainAppPage" class="hidden h-full flex flex-col">
+            <!-- Header -->
+            <div class="header">
+                <div class="flex items-center">
+                    <img id="headerProfilePic" class="profile-picture" src="https://placehold.co/48x48/cccccc/000000?text=P" alt="প্রোফাইল ছবি">
+                    <h2 id="welcomeText" class="text-xl font-semibold text-gray-800">স্বাগতম, ব্যবহারকারী!</h2>
+                </div>
+                <button id="settingsButton" class="text-gray-500 text-2xl"><i class="fas fa-cog"></i></button>
+            </div>
 
-<!-- Floating plus -->
-<div id="postBtn" class="plus-btn">+</div>
+            <!-- Navigation Tabs -->
+            <div class="nav-tabs">
+                <button id="feedTab" class="active">ফিড</button>
+                <button id="peopleTab">মানুষ</button>
+            </div>
 
-<!-- Bottom Nav -->
-<div class="bottom-nav">
-  <div id="navHome" class="nav-item">🏠</div>
-  <div id="navNotify" class="nav-item">🔔</div>
-  <div id="navHelp" class="nav-item">❤️</div>
-</div>
+            <!-- Content Area -->
+            <div class="content-section">
+                <!-- Feed Content -->
+                <div id="feedContent">
+                    <div class="post-card text-center flex flex-col items-center justify-center py-8">
+                        <p class="text-lg font-semibold text-gray-700 mb-4">এখনো কোনো পোস্ট নেই!</p>
+                        <p class="text-gray-500 mb-6">আপনার চিন্তাভাবনা বাইটবার্ড সম্প্রদায়ের সাথে শেয়ার করতে একটি পোস্ট তৈরি করুন।</p>
+                        <button id="createPostButton" class="btn-primary">পোস্ট তৈরি করুন</button>
+                    </div>
 
-  </div>  <script>
-    // Populate DOB
-    window.onload = () => {
-      const d = document.getElementById('dob-day');
-      const m = document.getElementById('dob-month');
-      const y = document.getElementById('dob-year');
-      for(let i=1;i<=31;i++) d.add(new Option(i,i));
-      ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].forEach((mo,i)=> m.add(new Option(mo,i+1)));
-      const cy = new Date().getFullYear();
-      for(let i=cy-16;i>=1900;i--) y.add(new Option(i,i));
-    };
-    // Modal
-    function openModal(){ document.getElementById('regModal').style.display='flex'; }
-    function completeSignup(){
-      document.getElementById('landing').style.display='none';
-      document.getElementById('regModal').style.display='none';
-      document.getElementById('app').style.display='block';
-    }
-    // Settings
-    document.getElementById('settingsIcon').onclick = () => {
-      const menu = document.getElementById('settingsMenu');
-      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    };
-    // Navigation
-    const feedView = document.getElementById('feedView');
-    const peopleView = document.getElementById('peopleView');
-    document.getElementById('feedOpt').onclick = ()=>{ feedView.style.display='block'; peopleView.style.display='none'; };
-    document.getElementById('peopleOpt').onclick = ()=>{ peopleView.style.display='block'; feedView.style.display='none'; };
-    // Bottom nav (Help: verify)
-    document.getElementById('navHelp').onclick = ()=>{
-      const code = prompt('Enter secret code to get verified:');
-      if(code === 'Jay Radhe Krishna 108'){
-        alert('Verified! Blue tick enabled.');
-      } else alert('Invalid code.');
-    };
-    document.getElementById('postBtn').onclick = ()=>{ alert('Create your micro post!'); };
-  </script></body>
-</html>
+                    <!-- Pinned Official Message -->
+                    <div class="post-card">
+                        <div class="flex items-center mb-4">
+                            <span class="logo mr-3 text-lg">b</span>
+                            <div>
+                                <p class="font-semibold text-gray-800">BrajYugal Creatives <i class="fas fa-check-circle text-teal-500 ml-1"></i></p>
+                                <p class="text-gray-500 text-sm">2 দিন আগে</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 mb-4">বাইটবার্ড পরিবারে স্বাগতম। 😊 আশা করি আপনি উপভোগ করবেন। 👋 জয় রাধে কৃষ্ণ। ❤️ 🙏 শুভ দিন। 🎉</p>
+                        <div class="flex justify-between items-center text-gray-500 text-sm">
+                            <div class="flex items-center space-x-4">
+                                <span class="flex items-center"><i class="fas fa-heart mr-1"></i> 10</span>
+                                <span class="flex items-center"><i class="fas fa-thumbs-down mr-1"></i> 1</span>
+                                <span class="flex items-center"><i class="fas fa-comment mr-1"></i> 0</span>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <span class="flex items-center"><i class="fas fa-retweet mr-1"></i> রিপোস্ট</span>
+                                <span class="flex items-center"><i class="fas fa-share-alt mr-1"></i> শেয়ার</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Dynamic Posts will be added here -->
+                    <div id="postsContainer"></div>
+                </div>
+
+                <!-- People Content (Hidden by default) -->
+                <div id="peopleContent" class="hidden">
+                    <div class="text-center py-8">
+                        <p class="text-lg font-semibold text-gray-700 mb-4">মানুষ আবিষ্কার করুন</p>
+                        <p class="text-gray-500 mb-6">বাইটবার্ডে অন্যদের সাথে সংযোগ স্থাপন করুন।</p>
+                    </div>
+                    <!-- Dynamic People will be added here -->
+                    <div id="peopleContainer"></div>
+                </div>
+            </div>
+
+            <!-- Floating Action Button -->
+            <button id="fabButton" class="absolute bottom-20 right-5 bg-teal-500 text-white rounded-full w-14 h-14 flex items-center justify-center text-3xl shadow-lg transform hover:scale-110 transition-transform">
+                <i class="fas fa-pencil-alt"></i>
+            </button>
+
+            <!-- Footer Navigation -->
+            <div class="footer-nav">
+                <button><i class="fas fa-home"></i></button>
+                <button><i class="fas fa-search"></i></button>
+                <button><i class="fas fa-bell"></i></button>
+                <button><i class="fas fa-user"></i></button>
+            </div>
+        </div>
+
+        <!-- Modals -->
+
+        <!-- Alert Message Modal -->
+        <div id="alertModal" class="modal">
+            <div class="modal-content w-11/12 max-w-sm">
+                <span class="close-button" onclick="closeAlertModal()">&times;</span>
+                <p id="alertMessageContent" class="text-gray-700 text-center"></p>
+                <button class="btn-primary w-full mt-6" onclick="closeAlertModal()">ঠিক আছে</button>
+            </div>
+        </div>
+
+
+        <!-- Login/Signup Modal -->
+        <div id="authModal" class="modal">
+            <div class="modal-content">
+                <span class="close-button" id="closeAuthModal">&times;</span>
+                <h3 id="authModalTitle" class="text-2xl font-bold mb-6 text-center text-gray-800"></h3>
+                <div class="alert-message" id="authAlertMessage"></div>
+                <input type="text" id="authUsername" placeholder="ইউজারনেম" class="focus:ring-2 focus:ring-teal-500">
+                <input type="password" id="authPassword" placeholder="পাসওয়ার্ড" class="focus:ring-2 focus:ring-teal-500">
+                <div id="signupFields">
+                    <input type="text" id="authAccountName" placeholder="অ্যাকাউন্টের নাম" class="focus:ring-2 focus:ring-teal-500">
+                    <label for="profilePictureUpload" class="block text-gray-700 text-sm font-bold mb-2">প্রোফাইল ছবি আপলোড করুন:</label>
+                    <input type="file" id="profilePictureUpload" accept="image/*" class="mb-4">
+                    <img id="profilePicturePreview" class="w-24 h-24 rounded-full object-cover mx-auto mb-4 hidden" src="" alt="প্রোফাইল ছবি প্রিভিউ">
+                </div>
+                <button id="submitAuthButton" class="btn-primary w-full">জমা দিন</button>
+                <p id="toggleAuthMode" class="text-center text-teal-600 mt-4 cursor-pointer text-sm"></p>
+            </div>
+        </div>
+
+        <!-- Post Creation Modal -->
+        <div id="postModal" class="modal">
+            <div class="modal-content">
+                <span class="close-button" id="closePostModal">&times;</span>
+                <h3 class="text-2xl font-bold mb-6 text-center text-gray-800">একটি নতুন পোস্ট তৈরি করুন</h3>
+                <div class="alert-message" id="postAlertMessage"></div>
+                <textarea id="postContent" placeholder="আপনার চিন্তাভাবনা শেয়ার করুন..." rows="5" class="focus:ring-2 focus:ring-teal-500"></textarea>
+                <label for="postImageUpload" class="block text-gray-700 text-sm font-bold mb-2">ছবি/ভিডিও আপলোড করুন (ঐচ্ছিক):</label>
+                <input type="file" id="postImageUpload" accept="image/*,video/*" class="mb-4">
+                <button id="submitPostButton" class="btn-primary w-full">পোস্ট করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables for Firebase (will be initialized if Firestore is used)
+        let db;
+        let auth;
+        let userId;
+
+        // Firebase configuration (empty for now, will be populated by Canvas runtime)
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Initialize Firebase only if the config is available (i.e., if Canvas provides it)
+        if (Object.keys(firebaseConfig).length > 0) {
+            // Import Firebase modules dynamically
+            Promise.all([
+                import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
+                import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"),
+                import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
+            ]).then(([firebaseAppModule, firebaseAuthModule, firebaseFirestoreModule]) => {
+                const { initializeApp } = firebaseAppModule;
+                const { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } = firebaseAuthModule;
+                const { getFirestore, doc, getDoc, setDoc, collection, query, where, addDoc, getDocs, onSnapshot } = firebaseFirestoreModule;
+
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Authenticate user
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        console.log("Firebase authenticated with user ID:", userId);
+                        loadUserDataAndPosts();
+                    } else {
+                        try {
+                            if (initialAuthToken) {
+                                await signInWithCustomToken(auth, initialAuthToken);
+                            } else {
+                                await signInAnonymously(auth);
+                            }
+                            userId = auth.currentUser.uid; // Update userId after successful sign-in
+                            console.log("Firebase signed in:", userId);
+                            loadUserDataAndPosts();
+                        } catch (error) {
+                            console.error("Firebase authentication error:", error);
+                            showAlert("লগইন ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।");
+                        }
+                    }
+                });
+            }).catch(error => {
+                console.error("Failed to load Firebase modules:", error);
+                showAlert("Firebase লোড করা যায়নি। অ্যাপের কিছু বৈশিষ্ট্য কাজ নাও করতে পারে।");
+            });
+        } else {
+            console.warn("Firebase config not available. Running in local storage mode.");
+            // If Firebase config is not available, initialize userId to a random string for local storage operations
+            userId = 'guest-' + Math.random().toString(36).substring(2, 15);
+            loadUserDataAndPosts(); // Load data from local storage if no Firebase
+        }
+
+
+        // UI Elements
+        const appContainer = document.getElementById('appContainer');
+        const authPage = document.getElementById('authPage');
+        const mainAppPage = document.getElementById('mainAppPage');
+        const joinNowButton = document.getElementById('joinNowButton');
+        const loginButton = document.getElementById('loginButton');
+        const guestModeButton = document.getElementById('guestModeButton');
+        const feedTab = document.getElementById('feedTab');
+        const peopleTab = document.getElementById('peopleTab');
+        const feedContent = document.getElementById('feedContent');
+        const peopleContent = document.getElementById('peopleContent');
+        const createPostButton = document.getElementById('createPostButton');
+        const fabButton = document.getElementById('fabButton');
+        const postsContainer = document.getElementById('postsContainer');
+        const peopleContainer = document.getElementById('peopleContainer');
+        const headerProfilePic = document.getElementById('headerProfilePic');
+        const welcomeText = document.getElementById('welcomeText');
+        const settingsButton = document.getElementById('settingsButton');
+
+        // Modals
+        const alertModal = document.getElementById('alertModal');
+        const alertMessageContent = document.getElementById('alertMessageContent');
+
+        const authModal = document.getElementById('authModal');
+        const closeAuthModal = document.getElementById('closeAuthModal');
+      
