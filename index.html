@@ -1,455 +1,760 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bytebird</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #e0f2f7; /* Light blue background */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            overflow-x: hidden; /* Prevent horizontal scrolling */
-        }
-        .container {
-            background-color: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            min-height: 80vh;
-            position: relative;
-        }
-        .header {
-            background-color: #ffffff;
-            padding: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #f0f0f0;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        .logo-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 32px 0;
-        }
-        .logo {
-            background-color: black;
-            color: white;
-            font-size: 2rem;
-            font-weight: bold;
-            padding: 8px 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            display: inline-block;
-        }
-        .nav-tabs {
-            display: flex;
-            justify-content: space-around;
-            border-bottom: 1px solid #f0f0f0;
-            background-color: #ffffff;
-            position: sticky;
-            top: 60px; /* Adjust based on header height */
-            z-index: 9;
-        }
-        .nav-tabs button {
-            padding: 12px 0;
-            flex-grow: 1;
-            background: none;
-            border: none;
-            font-size: 1rem;
-            font-weight: 600;
-            color: #666;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-bottom: 2px solid transparent;
-        }
-        .nav-tabs button.active {
-            color: #0d9488; /* Teal color for active tab */
-            border-bottom-color: #0d9488;
-        }
-        .content-section {
-            flex-grow: 1;
-            padding: 16px;
-            overflow-y: auto;
-        }
-        .post-card, .person-card {
-            background-color: #f7faff; /* Lighter background for cards */
-            border-radius: 15px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-        }
-        .footer-nav {
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            border-top: 1px solid #f0f0f0;
-            background-color: #ffffff;
-            position: sticky;
-            bottom: 0;
-            z-index: 10;
-        }
-        .footer-nav button {
-            background: none;
-            border: none;
-            color: #666;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-        .footer-nav button:hover {
-            background-color: #e0f2f7;
-            color: #0d9488;
-        }
-        .profile-picture {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 12px;
-            border: 2px solid #0d9488; /* Teal border for profile pics */
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.6);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background-color: #ffffff;
-            margin: auto;
-            padding: 24px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 450px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            position: relative;
-        }
-        .close-button {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            color: #aaa;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .close-button:hover,
-        .close-button:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        input[type="text"],
-        input[type="password"],
-        textarea {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 16px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
-        input[type="file"] {
-            margin-bottom: 16px;
-        }
-        button {
-            padding: 12px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-        .btn-primary {
-            background-color: #0d9488; /* Teal */
-            color: white;
-            border: none;
-        }
-        .btn-primary:hover {
-            background-color: #057a6e;
-            transform: translateY(-2px);
-        }
-        .btn-secondary {
-            background-color: #e0f2f7; /* Light blue */
-            color: #0d9488;
-            border: 1px solid #0d9488;
-        }
-        .btn-secondary:hover {
-            background-color: #c7e8f0;
-            transform: translateY(-2px);
-        }
-        .alert-message {
-            background-color: #d1fae5;
-            color: #065f46;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: none; /* Hidden by default */
-        }
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: #0d9488;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-            display: none; /* Hidden by default */
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
-</head>
-<body>
-    <div class="container" id="appContainer">
-        <!-- Login/Signup Page -->
-        <div id="authPage" class="content-section flex flex-col justify-center items-center h-full text-center">
-            <div class="logo-section">
-                <span class="logo">b</span>
-                <h1 class="text-3xl font-bold text-gray-800">Bytebird</h1>
-                <p class="text-gray-600 mt-1">by BrajYugal Creatives</p>
-                <p class="text-gray-500 mt-4 text-xl">Voice of India</p>
-            </div>
-            <button id="joinNowButton" class="btn-primary w-full max-w-xs mt-6">এখনই যোগদান করুন</button>
-            <button id="loginButton" class="btn-secondary w-full max-w-xs mt-4">লগইন করুন</button>
-            <button id="guestModeButton" class="btn-secondary w-full max-w-xs mt-4">গেস্ট মোডে প্রবেশ করুন</button>
-            <p class="text-gray-500 text-sm mt-8">কমিউনিটি নির্দেশিকা: বাক স্বাধীনতা। কোনো সহিংসতা নেই।</p>
-        </div>
+import React, { useState, useEffect, useRef } from "react";
 
-        <!-- Main App Page (Hidden by default) -->
-        <div id="mainAppPage" class="hidden h-full flex flex-col">
-            <!-- Header -->
-            <div class="header">
-                <div class="flex items-center">
-                    <img id="headerProfilePic" class="profile-picture" src="https://placehold.co/48x48/cccccc/000000?text=P" alt="প্রোফাইল ছবি">
-                    <h2 id="welcomeText" class="text-xl font-semibold text-gray-800">স্বাগতম, ব্যবহারকারী!</h2>
-                </div>
-                <button id="settingsButton" class="text-gray-500 text-2xl"><i class="fas fa-cog"></i></button>
-            </div>
+// Utils
+const BLUE_TICK = (
+  <svg
+    style={{ width: 20, height: 20, marginLeft: 4, verticalAlign: "middle" }}
+    viewBox="0 0 24 24"
+  >
+    <circle cx="12" cy="12" r="12" fill="#388bfd" />
+    <path
+      d="M7 13l3 3 7-7"
+      stroke="#fff"
+      strokeWidth="2"
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
 
-            <!-- Navigation Tabs -->
-            <div class="nav-tabs">
-                <button id="feedTab" class="active">ফিড</button>
-                <button id="peopleTab">মানুষ</button>
-            </div>
+// SVG Custom Bird Logo (not like Twitter)
+function BirdLogo({ size = 80 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 110 110" fill="none">
+      <ellipse cx="55" cy="70" rx="33" ry="22" fill="#1e90ff" />
+      <ellipse cx="55" cy="45" rx="27" ry="19" fill="#90caf9" />
+      <ellipse cx="70" cy="45" rx="11" ry="7" fill="#1976d2" />
+      <ellipse cx="37" cy="50" rx="7" ry="4" fill="#fff9c4" />
+      <polygon points="55,32 59,22 62,34" fill="#ffab91" />
+      <ellipse cx="64" cy="48" rx="2" ry="1.2" fill="#222" />
+      <ellipse cx="47" cy="48" rx="2" ry="1.2" fill="#222" />
+      <path d="M51 60 Q55 65 59 60" stroke="#ff7043" strokeWidth="2" fill="none" />
+      <ellipse cx="58" cy="41" rx="10" ry="4" fill="#b3e5fc" />
+      <ellipse cx="72" cy="37" rx="4" ry="1.8" fill="#b3e5fc" />
+    </svg>
+  );
+}
 
-            <!-- Content Area -->
-            <div class="content-section">
-                <!-- Feed Content -->
-                <div id="feedContent">
-                    <div class="post-card text-center flex flex-col items-center justify-center py-8">
-                        <p class="text-lg font-semibold text-gray-700 mb-4">এখনো কোনো পোস্ট নেই!</p>
-                        <p class="text-gray-500 mb-6">আপনার চিন্তাভাবনা বাইটবার্ড সম্প্রদায়ের সাথে শেয়ার করতে একটি পোস্ট তৈরি করুন।</p>
-                        <button id="createPostButton" class="btn-primary">পোস্ট তৈরি করুন</button>
-                    </div>
+// Default Data
+const defaultAccounts = [
+  {
+    id: "bytebird_official",
+    name: "Bytebird Official",
+    username: "bytebird_official",
+    password: "bytebird1234", // won't be used for login (system)
+    birth: "01-2000",
+    picture: null,
+    verified: true,
+    system: true,
+  },
+  {
+    id: "narendra_modi",
+    name: "Narendra Modi",
+    username: "narendra_modi",
+    password: "modi12345678",
+    birth: "09-1950",
+    picture: null,
+    verified: true,
+    system: true,
+  },
+  {
+    id: "virat_kohli",
+    name: "Virat Kohli",
+    username: "virat_kohli",
+    password: "kohli1234567",
+    birth: "11-1988",
+    picture: null,
+    verified: true,
+    system: true,
+  },
+];
 
-                    <!-- Pinned Official Message -->
-                    <div class="post-card">
-                        <div class="flex items-center mb-4">
-                            <span class="logo mr-3 text-lg">b</span>
-                            <div>
-                                <p class="font-semibold text-gray-800">BrajYugal Creatives <i class="fas fa-check-circle text-teal-500 ml-1"></i></p>
-                                <p class="text-gray-500 text-sm">2 দিন আগে</p>
-                            </div>
-                        </div>
-                        <p class="text-gray-700 mb-4">বাইটবার্ড পরিবারে স্বাগতম। 😊 আশা করি আপনি উপভোগ করবেন। 👋 জয় রাধে কৃষ্ণ। ❤️ 🙏 শুভ দিন। 🎉</p>
-                        <div class="flex justify-between items-center text-gray-500 text-sm">
-                            <div class="flex items-center space-x-4">
-                                <span class="flex items-center"><i class="fas fa-heart mr-1"></i> 10</span>
-                                <span class="flex items-center"><i class="fas fa-thumbs-down mr-1"></i> 1</span>
-                                <span class="flex items-center"><i class="fas fa-comment mr-1"></i> 0</span>
-                            </div>
-                            <div class="flex items-center space-x-4">
-                                <span class="flex items-center"><i class="fas fa-retweet mr-1"></i> রিপোস্ট</span>
-                                <span class="flex items-center"><i class="fas fa-share-alt mr-1"></i> শেয়ার</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Dynamic Posts will be added here -->
-                    <div id="postsContainer"></div>
-                </div>
+// Welcome post
+const defaultPosts = [
+  {
+    id: "welcome1",
+    author: "bytebird_official",
+    authorName: "Bytebird Official",
+    verified: true,
+    content:
+      "Welcome to our Bytebird family 😊 Have a nice day Jay Radhe Krishna! Explore and invite your friends 😃👋🥰",
+    image: null,
+    video: null,
+    likes: [],
+    dislikes: [],
+    createdAt: new Date().toISOString(),
+  },
+];
 
-                <!-- People Content (Hidden by default) -->
-                <div id="peopleContent" class="hidden">
-                    <div class="text-center py-8">
-                        <p class="text-lg font-semibold text-gray-700 mb-4">মানুষ আবিষ্কার করুন</p>
-                        <p class="text-gray-500 mb-6">বাইটবার্ডে অন্যদের সাথে সংযোগ স্থাপন করুন।</p>
-                    </div>
-                    <!-- Dynamic People will be added here -->
-                    <div id="peopleContainer"></div>
-                </div>
-            </div>
+// Storage helpers
+function getLocal(key, fallback) {
+  try {
+    return JSON.parse(localStorage.getItem(key)) || fallback;
+  } catch {
+    return fallback;
+  }
+}
+function setLocal(key, val) {
+  localStorage.setItem(key, JSON.stringify(val));
+}
 
-            <!-- Floating Action Button -->
-            <button id="fabButton" class="absolute bottom-20 right-5 bg-teal-500 text-white rounded-full w-14 h-14 flex items-center justify-center text-3xl shadow-lg transform hover:scale-110 transition-transform">
-                <i class="fas fa-pencil-alt"></i>
-            </button>
+// Avatar Generator fallback
+function genAvatar(name) {
+  let bg = "#90caf9";
+  let letter = (name || "?")[0]?.toUpperCase() || "?";
+  return `data:image/svg+xml;utf8,<svg width="80" height="80" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="40" r="40" fill="${bg}"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="34" font-family="Arial" fill="#fff">${letter}</text></svg>`;
+}
 
-            <!-- Footer Navigation -->
-            <div class="footer-nav">
-                <button><i class="fas fa-home"></i></button>
-                <button><i class="fas fa-search"></i></button>
-                <button><i class="fas fa-bell"></i></button>
-                <button><i class="fas fa-user"></i></button>
-            </div>
-        </div>
+// Validate strong password
+function isStrongPassword(p) {
+  return p?.length === 12 && /\d/.test(p) && /[A-Za-z]/.test(p);
+}
 
-        <!-- Modals -->
+// Main App
+export default function App() {
+  // App states
+  const [accounts, setAccounts] = useState(() =>
+    getLocal("bytebird_accounts", [...defaultAccounts])
+  );
+  const [posts, setPosts] = useState(() =>
+    getLocal("bytebird_posts", [...defaultPosts])
+  );
+  const [session, setSession] = useState(() =>
+    getLocal("bytebird_session", null)
+  );
+  const [screen, setScreen] = useState(session ? "home" : "welcome");
+  const [highlightBtn, setHighlightBtn] = useState(false);
 
-        <!-- Alert Message Modal -->
-        <div id="alertModal" class="modal">
-            <div class="modal-content w-11/12 max-w-sm">
-                <span class="close-button" onclick="closeAlertModal()">&times;</span>
-                <p id="alertMessageContent" class="text-gray-700 text-center"></p>
-                <button class="btn-primary w-full mt-6" onclick="closeAlertModal()">ঠিক আছে</button>
-            </div>
-        </div>
+  // Save on change
+  useEffect(() => {
+    setLocal("bytebird_accounts", accounts);
+  }, [accounts]);
+  useEffect(() => {
+    setLocal("bytebird_posts", posts);
+  }, [posts]);
+  useEffect(() => {
+    setLocal("bytebird_session", session);
+  }, [session]);
 
+  // Dynamic screen management
+  useEffect(() => {
+    if (session) setScreen("home");
+    else setScreen("welcome");
+  }, [session]);
 
-        <!-- Login/Signup Modal -->
-        <div id="authModal" class="modal">
-            <div class="modal-content">
-                <span class="close-button" id="closeAuthModal">&times;</span>
-                <h3 id="authModalTitle" class="text-2xl font-bold mb-6 text-center text-gray-800"></h3>
-                <div class="alert-message" id="authAlertMessage"></div>
-                <input type="text" id="authUsername" placeholder="ইউজারনেম" class="focus:ring-2 focus:ring-teal-500">
-                <input type="password" id="authPassword" placeholder="পাসওয়ার্ড" class="focus:ring-2 focus:ring-teal-500">
-                <div id="signupFields">
-                    <input type="text" id="authAccountName" placeholder="অ্যাকাউন্টের নাম" class="focus:ring-2 focus:ring-teal-500">
-                    <label for="profilePictureUpload" class="block text-gray-700 text-sm font-bold mb-2">প্রোফাইল ছবি আপলোড করুন:</label>
-                    <input type="file" id="profilePictureUpload" accept="image/*" class="mb-4">
-                    <img id="profilePicturePreview" class="w-24 h-24 rounded-full object-cover mx-auto mb-4 hidden" src="" alt="প্রোফাইল ছবি প্রিভিউ">
-                </div>
-                <button id="submitAuthButton" class="btn-primary w-full">জমা দিন</button>
-                <p id="toggleAuthMode" class="text-center text-teal-600 mt-4 cursor-pointer text-sm"></p>
-            </div>
-        </div>
+  // Highlight join now
+  useEffect(() => {
+    if (screen === "welcome") {
+      setHighlightBtn(true);
+      const t = setTimeout(() => setHighlightBtn(false), 1200);
+      return () => clearTimeout(t);
+    }
+  }, [screen]);
 
-        <!-- Post Creation Modal -->
-        <div id="postModal" class="modal">
-            <div class="modal-content">
-                <span class="close-button" id="closePostModal">&times;</span>
-                <h3 class="text-2xl font-bold mb-6 text-center text-gray-800">একটি নতুন পোস্ট তৈরি করুন</h3>
-                <div class="alert-message" id="postAlertMessage"></div>
-                <textarea id="postContent" placeholder="আপনার চিন্তাভাবনা শেয়ার করুন..." rows="5" class="focus:ring-2 focus:ring-teal-500"></textarea>
-                <label for="postImageUpload" class="block text-gray-700 text-sm font-bold mb-2">ছবি/ভিডিও আপলোড করুন (ঐচ্ছিক):</label>
-                <input type="file" id="postImageUpload" accept="image/*,video/*" class="mb-4">
-                <button id="submitPostButton" class="btn-primary w-full">পোস্ট করুন</button>
-            </div>
-        </div>
+  // Handlers
+  function handleJoinNow(data) {
+    // Check age
+    const [birthM, birthY] = data.birth.split("-").map(Number);
+    const now = new Date();
+    let age = now.getFullYear() - birthY;
+    if (
+      now.getMonth() + 1 < birthM ||
+      (now.getMonth() + 1 === birthM && now.getDate() < 1)
+    )
+      age--;
+    if (age < 16) return alert("You must be 16+ to join Bytebird!");
+
+    // Username uniqueness
+    if (accounts.some((a) => a.username === data.username))
+      return alert("This username is already taken!");
+
+    // Password
+    if (!isStrongPassword(data.password))
+      return alert(
+        "Password must be exactly 12 characters, with letters and numbers."
+      );
+
+    // Save photo
+    let img = data.picture;
+    if (!img) img = genAvatar(data.name);
+
+    const id = data.username + Math.random().toString(36).slice(2, 6);
+
+    const user = {
+      id,
+      name: data.name,
+      username: data.username,
+      password: data.password,
+      birth: data.birth,
+      picture: img,
+      verified: false,
+      system: false,
+    };
+    setAccounts((prev) => [...prev, user]);
+    setSession({ ...user });
+    setScreen("home");
+  }
+
+  function handleSignIn(username, password) {
+    let account = accounts.find(
+      (a) => a.username === username && a.password === password
+    );
+    if (!account)
+      return alert("Invalid username or password! Try again or join new.");
+    setSession({ ...account });
+    setScreen("home");
+  }
+
+  function handleGuest() {
+    setSession({ guest: true, name: "Guest", id: "guest" });
+    setScreen("home");
+  }
+
+  // Settings actions
+  function handleDeleteProfile() {
+    if (
+      window.confirm(
+        "Are you sure you want to delete your account? This cannot be undone."
+      )
+    ) {
+      setAccounts((prev) =>
+        prev.filter((a) => a.id !== session.id)
+      );
+      setSession(null);
+      setScreen("welcome");
+    }
+  }
+
+  function handleAddAccount() {
+    setSession(null);
+    setScreen("welcome");
+  }
+
+  // Blue tick verification
+  function handleVerify(code) {
+    if (code === "Jay Radhe Krishna 108") {
+      setAccounts((prev) =>
+        prev.map((a) =>
+          a.id === session.id ? { ...a, verified: true } : a
+        )
+      );
+      setSession((prev) => ({ ...prev, verified: true }));
+      alert("Account verified! Blue tick added.");
+    } else {
+      alert("Invalid code.");
+    }
+  }
+
+  // Add blue tick to others
+  function handleVerifyOther(id, code) {
+    if (code === "Jay Radhe Krishna 108") {
+      setAccounts((prev) =>
+        prev.map((a) =>
+          a.id === id ? { ...a, verified: true } : a
+        )
+      );
+      alert("Account verified!");
+    } else {
+      alert("Invalid code.");
+    }
+  }
+
+  // Profile picture upgrade (admin)
+  function handleChangePic(id, code, file) {
+    if (code === "Jay Radhe Krishna 108") {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setAccounts((prev) =>
+          prev.map((a) =>
+            a.id === id ? { ...a, picture: e.target.result } : a
+          )
+        );
+        if (id === session?.id)
+          setSession((prev) => ({ ...prev, picture: file }));
+        alert("Profile picture updated!");
+      };
+      reader.readAsDataURL(file);
+    } else {
+      alert("Invalid code.");
+    }
+  }
+
+  // Post create
+  function handlePost({ text, img, vid }) {
+    if (!text && !img && !vid) return;
+    const post = {
+      id: "p" + Date.now() + Math.random().toString(36).slice(2, 6),
+      author: session.username,
+      authorName: session.name,
+      verified: session.verified,
+      content: text,
+      image: img,
+      video: vid,
+      likes: [],
+      dislikes: [],
+      createdAt: new Date().toISOString(),
+    };
+    setPosts((prev) => [post, ...prev]);
+  }
+
+  // Like/dislike
+  function handleLike(pid) {
+    setPosts((prev) =>
+      prev.map((p) =>
+        p.id === pid
+          ? {
+              ...p,
+              likes: p.likes.includes(session.id)
+                ? p.likes.filter((id) => id !== session.id)
+                : [...p.likes, session.id],
+              dislikes: p.dislikes.filter((id) => id !== session.id),
+            }
+          : p
+      )
+    );
+  }
+  function handleDislike(pid) {
+    setPosts((prev) =>
+      prev.map((p) =>
+        p.id === pid
+          ? {
+              ...p,
+              dislikes: p.dislikes.includes(session.id)
+                ? p.dislikes.filter((id) => id !== session.id)
+                : [...p.dislikes, session.id],
+              likes: p.likes.filter((id) => id !== session.id),
+            }
+          : p
+      )
+    );
+  }
+
+  // Follow
+  function handleFollow(uid) {
+    let my = accounts.find((a) => a.id === session.id);
+    if (!my) return;
+    let following = my.following || [];
+    if (following.includes(uid))
+      following = following.filter((id) => id !== uid);
+    else following.push(uid);
+    setAccounts((prev) =>
+      prev.map((a) =>
+        a.id === my.id ? { ...a, following } : a
+      )
+    );
+    setSession((prev) => ({ ...prev, following }));
+  }
+
+  // Render
+  return (
+    <div style={{ minHeight: "100vh", background: "#fff" }}>
+      {screen === "welcome" && (
+        <WelcomeScreen
+          onJoinNow={() => setScreen("join")}
+          onGuest={handleGuest}
+          highlightBtn={highlightBtn}
+        />
+      )}
+      {screen === "join" && (
+        <JoinForm
+          onContinue={handleJoinNow}
+          onBack={() => setScreen("welcome")}
+          users={accounts}
+        />
+      )}
+      {screen === "home" && (
+        <Home
+          session={session}
+          accounts={accounts}
+          posts={posts}
+          onPost={handlePost}
+          onLike={handleLike}
+          onDislike={handleDislike}
+          onLogout={() => setSession(null)}
+          onSettings={() => setScreen("settings")}
+        />
+      )}
+      {screen === "settings" && (
+        <Settings
+          session={session}
+          accounts={accounts}
+          onBack={() => setScreen("home")}
+          onDelete={handleDeleteProfile}
+          onAddAccount={handleAddAccount}
+          onVerify={handleVerify}
+          onVerifyOther={handleVerifyOther}
+          onChangePic={handleChangePic}
+        />
+      )}
+      {screen === "privacy" && <Privacy onBack={() => setScreen("settings")} />}
+      {screen === "guidelines" && (
+        <Guidelines onBack={() => setScreen("settings")} />
+      )}
     </div>
+  );
+}
 
-    <script>
-        // Global variables for Firebase (will be initialized if Firestore is used)
-        let db;
-        let auth;
-        let userId;
+// -- COMPONENTS --
 
-        // Firebase configuration (empty for now, will be populated by Canvas runtime)
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+function WelcomeScreen({ onJoinNow, onGuest, highlightBtn }) {
+  return (
+    <div
+      style={{
+        maxWidth: 400,
+        margin: "0 auto",
+        paddingTop: 32,
+        textAlign: "center",
+      }}
+    >
+      <BirdLogo size={96} />
+      <h1 style={{ fontSize: 38, fontWeight: 900, margin: "20px 0 8px 0", letterSpacing: 2, color: "#1e293b", textShadow:"0 1px 2px #b3e5fc" }}>
+        BYTEBIRD
+      </h1>
+      <div style={{ fontWeight: 600, color: "#388bfd", fontSize: 16 }}>
+        by Brojyugol Creative
+      </div>
+      <div style={{ color: "#7a7a7a", fontStyle: "italic", fontSize: 14, marginBottom: 24 }}>
+        Welcome
+      </div>
 
-        // Initialize Firebase only if the config is available (i.e., if Canvas provides it)
-        if (Object.keys(firebaseConfig).length > 0) {
-            // Import Firebase modules dynamically
-            Promise.all([
-                import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
-                import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"),
-                import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
-            ]).then(([firebaseAppModule, firebaseAuthModule, firebaseFirestoreModule]) => {
-                const { initializeApp } = firebaseAppModule;
-                const { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } = firebaseAuthModule;
-                const { getFirestore, doc, getDoc, setDoc, collection, query, where, addDoc, getDocs, onSnapshot } = firebaseFirestoreModule;
+      <button
+        style={{
+          width: "80%",
+          borderRadius: 90,
+          padding: "16px 0",
+          margin: "16px 0 12px 0",
+          background:
+            highlightBtn || false
+              ? "linear-gradient(90deg,#43e97b 50%,#38f9d7)"
+              : "#1976d2",
+          color: "#fff",
+          fontSize: 20,
+          fontWeight: 900,
+          border: "none",
+          boxShadow: highlightBtn
+            ? "0 0 8px 2px #38f9d7"
+            : "0 1px 2px #aaa",
+          cursor: "pointer",
+          transition: "all 0.2s",
+        }}
+        onClick={onJoinNow}
+      >
+        Join Now
+      </button>
+      <button
+        style={{
+          width: "80%",
+          borderRadius: 90,
+          padding: "14px 0",
+          marginBottom: 12,
+          background: "#34d058",
+          color: "#fff",
+          fontSize: 18,
+          fontWeight: 700,
+          border: "none",
+          boxShadow: "0 1px 2px #aaa",
+          cursor: "pointer",
+        }}
+        onClick={() => alert("Use Join Now to create account, then always auto-login!")}
+        disabled
+      >
+        Sign In (Disabled)
+      </button>
+      <button
+        style={{
+          width: "80%",
+          borderRadius: 90,
+          padding: "12px 0",
+          marginBottom: 10,
+          background: "#ffc400",
+          color: "#222",
+          fontSize: 17,
+          fontWeight: 700,
+          border: "none",
+          boxShadow: "0 1px 2px #aaa",
+          cursor: "pointer",
+        }}
+        onClick={onGuest}
+      >
+        Enter Guest Mode
+      </button>
+      <div
+        style={{
+          marginTop: 24,
+          fontSize: 13,
+          color: "#8a8a8a",
+          lineHeight: 1.6,
+        }}
+      >
+        <b
+          style={{ color: "#1976d2", cursor: "pointer" }}
+          onClick={() => window.dispatchEvent(new CustomEvent("privacy"))}
+        >
+          Privacy Policy
+        </b>{" "}
+        &nbsp;|&nbsp;
+        <b
+          style={{ color: "#1976d2", cursor: "pointer" }}
+          onClick={() => window.dispatchEvent(new CustomEvent("guidelines"))}
+        >
+          Community Guidelines
+        </b>
+        <br />
+        <span style={{ color: "#7a7a7a" }}>
+          By continuing, you agree to our Privacy Policy & Community Guidelines.
+        </span>
+      </div>
+    </div>
+  );
+}
 
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
+function JoinForm({ onContinue, onBack, users }) {
+  const [step, setStep] = useState(0);
+  const [img, setImg] = useState(null);
+  const [name, setName] = useState("");
+  const [birth, setBirth] = useState("");
+  const [username, setUsername] = useState("");
+  const [pass, setPass] = useState("");
+  const inputRef = useRef(null);
 
-                // Authenticate user
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        console.log("Firebase authenticated with user ID:", userId);
-                        loadUserDataAndPosts();
-                    } else {
-                        try {
-                            if (initialAuthToken) {
-                                await signInWithCustomToken(auth, initialAuthToken);
-                            } else {
-                                await signInAnonymously(auth);
-                            }
-                            userId = auth.currentUser.uid; // Update userId after successful sign-in
-                            console.log("Firebase signed in:", userId);
-                            loadUserDataAndPosts();
-                        } catch (error) {
-                            console.error("Firebase authentication error:", error);
-                            showAlert("লগইন ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।");
-                        }
-                    }
-                });
-            }).catch(error => {
-                console.error("Failed to load Firebase modules:", error);
-                showAlert("Firebase লোড করা যায়নি। অ্যাপের কিছু বৈশিষ্ট্য কাজ নাও করতে পারে।");
-            });
-        } else {
-            console.warn("Firebase config not available. Running in local storage mode.");
-            // If Firebase config is not available, initialize userId to a random string for local storage operations
-            userId = 'guest-' + Math.random().toString(36).substring(2, 15);
-            loadUserDataAndPosts(); // Load data from local storage if no Firebase
-        }
+  function handleImg(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => setImg(ev.target.result);
+    reader.readAsDataURL(file);
+  }
 
+  function handleNext(e) {
+    e.preventDefault();
+    if (step === 0 && !img) {
+      alert("Please upload a profile picture (auto-cropped).");
+      return;
+    }
+    if (step === 1 && !name) {
+      alert("Enter your name.");
+      return;
+    }
+    if (step === 2 && !birth) {
+      alert(
+        "Enter date of birth as MM-YYYY (e.g., 06-2005). You must be 16+ years."
+      );
+      return;
+    }
+    if (step === 3 && (!username || users.some((u) => u.username === username))) {
+      alert("Choose a unique username.");
+      return;
+    }
+    if (step === 4 && !isStrongPassword(pass)) {
+      alert(
+        "Password must be exactly 12 characters, contain letters and numbers."
+      );
+      return;
+    }
+    if (step < 4) setStep((s) => s + 1);
+    else {
+      onContinue({
+        picture: img,
+        name,
+        birth,
+        username,
+        password: pass,
+      });
+    }
+  }
 
-        // UI Elements
-        const appContainer = document.getElementById('appContainer');
-        const authPage = document.getElementById('authPage');
-        const mainAppPage = document.getElementById('mainAppPage');
-        const joinNowButton = document.getElementById('joinNowButton');
-        const loginButton = document.getElementById('loginButton');
-        const guestModeButton = document.getElementById('guestModeButton');
-        const feedTab = document.getElementById('feedTab');
-        const peopleTab = document.getElementById('peopleTab');
-        const feedContent = document.getElementById('feedContent');
-        const peopleContent = document.getElementById('peopleContent');
-        const createPostButton = document.getElementById('createPostButton');
-        const fabButton = document.getElementById('fabButton');
-        const postsContainer = document.getElementById('postsContainer');
-        const peopleContainer = document.getElementById('peopleContainer');
-        const headerProfilePic = document.getElementById('headerProfilePic');
-        const welcomeText = document.getElementById('welcomeText');
-        const settingsButton = document.getElementById('settingsButton');
+  function handleBack() {
+    if (step === 0) onBack();
+    else setStep((s) => s - 1);
+  }
 
-        // Modals
-        const alertModal = document.getElementById('alertModal');
-        const alertMessageContent = document.getElementById('alertMessageContent');
+  return (
+    <form
+      style={{
+        maxWidth: 360,
+        margin: "40px auto",
+        padding: "28px 24px",
+        background: "#f1f8ff",
+        borderRadius: 16,
+        boxShadow: "0 8px 24px #b3e5fc44",
+      }}
+      onSubmit={handleNext}
+    >
+      <div style={{ textAlign: "center" }}>
+        <BirdLogo size={60} />
+        <h2 style={{ color: "#1e293b", margin: "10px 0 6px" }}>Join Bytebird</h2>
+      </div>
+      {step === 0 && (
+        <div>
+          <div style={{ fontWeight: 700 }}>Upload Profile Picture</div>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImg}
+            style={{ margin: "12px 0" }}
+            ref={inputRef}
+          />
+          {img && (
+            <img
+              src={img}
+              alt="profile"
+              style={{
+                borderRadius: "50%",
+                width: 78,
+                height: 78,
+                objectFit: "cover",
+                boxShadow: "0 1px 6px #90caf9",
+              }}
+            />
+          )}
+        </div>
+      )}
+      {step === 1 && (
+        <div>
+          <label>
+            <div style={{ fontWeight: 700 }}>Your Name</div>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              style={inputStyle}
+              placeholder="Full name"
+            />
+          </label>
+        </div>
+      )}
+      {step === 2 && (
+        <div>
+          <label>
+            <div style={{ fontWeight: 700 }}>Date of Birth (MM-YYYY)</div>
+            <input
+              type="text"
+              value={birth}
+              onChange={(e) => setBirth(e.target.value)}
+              required
+              style={inputStyle}
+              placeholder="MM-YYYY"
+              pattern="\d{2}-\d{4}"
+            />
+          </label>
+        </div>
+      )}
+      {step === 3 && (
+        <div>
+          <label>
+            <div style={{ fontWeight: 700 }}>Username</div>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              style={inputStyle}
+              placeholder="Unique username"
+            />
+          </label>
+        </div>
+      )}
+      {step === 4 && (
+        <div>
+          <label>
+            <div style={{ fontWeight: 700 }}>
+              Password (12 chars, letters &amp; numbers)
+            </div>
+            <input
+              type="password"
+              value={pass}
+              onChange={(e) => setPass(e.target.value)}
+              required
+              style={inputStyle}
+              placeholder="Your password"
+            />
+          </label>
+        </div>
+      )}
+      <div style={{ marginTop: 24, textAlign: "center" }}>
+        <button type="button" onClick={handleBack} style={backBtnStyle}>
+          {step === 0 ? "Back" : "Previous"}
+        </button>
+        <button type="submit" style={joinBtnStyle}>
+          {step === 4 ? "Continue" : "Next"}
+        </button>
+      </div>
+    </form>
+  );
+}
 
-        const authModal = document.getElementById('authModal');
-        const closeAuthModal = document.getElementById('closeAuthModal');
-      
+function Home({
+  session,
+  accounts,
+  posts,
+  onPost,
+  onLike,
+  onDislike,
+  onLogout,
+  onSettings,
+}) {
+  const [tab, setTab] = useState("feed");
+  const [postText, setPostText] = useState("");
+  const [postImg, setPostImg] = useState(null);
+  const [postVid, setPostVid] = useState(null);
+
+  if (!session) return null;
+
+  // Posts visible to all
+  const feedPosts = posts;
+
+  // All users except guest
+  const people = accounts.filter((a) => !a.guest);
+
+  function handleImg(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => setPostImg(ev.target.result);
+    reader.readAsDataURL(file);
+  }
+  function handleVid(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => setPostVid(ev.target.result);
+    reader.readAsDataURL(file);
+  }
+  function handlePostSubmit(e) {
+    e.preventDefault();
+    onPost({
+      text: postText,
+      img: postImg,
+      vid: postVid,
+    });
+    setPostText("");
+    setPostImg(null);
+    setPostVid(null);
+  }
+
+  return (
+    <div>
+      <div
+        style={{
+          padding: "14px 0 8px 0",
+          background: "#fff",
+          borderBottom: "1.5px solid #e3e3e3",
+          textAlign: "center",
+        }}
+      >
+        <BirdLogo size={62} />
+      </div>
+      <div
+        style={{
+          textAlign: "center",
+          fontWeight: 700,
+          fontSize: 22,
+          color: "#388bfd",
+          marginTop: 8,
+        }}
+      >
+        Welcome, {session?.name || "Guest"}
+      </div>
+      <div style={{
